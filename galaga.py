@@ -1,12 +1,13 @@
 import pygame
 import sys
-from random import shuffle, randrange, choice
+import random
 
 pygame.init()
 clock = pygame.time.Clock()
 ship_img = pygame.image.load('ship.png')
 enemy_1_img = pygame.image.load('enemy1_1.png')
-
+laser = pygame.image.load('laser.png')
+lasers = []
 
 #           R    G    B
 WHITE 	= (255, 255, 255)
@@ -28,6 +29,21 @@ IMG_NAMES 	= ["ship", "ship", "mystery", "enemy1_1", "enemy1_2", "enemy2_1", "en
 IMAGES 		= {name: image.load("images/{}.png".format(name)).convert_alpha()
 				for name in IMG_NAMES}'''
 
+class Bullet(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		pygame.sprite.Sprite.__init__(self)
+		self.image = laser
+		self.rect = self.image.get_rect(center=pos)
+		self.rect.bottom = y
+		self.rect.centerx = x
+		self.speed = -10
+		
+	def update(self, dt):
+		self.rect.y += self.speedy
+		#kill if it moves off the top of the screen
+		if self.rect.bottom < 0:
+			self.kill()
+
 class Background(pygame.sprite.Sprite):
 	def __init__(self, image_file, location):
 		pygame.sprite.Sprite.__init__(self) #call Sprite initializer
@@ -47,6 +63,7 @@ def game_loop():
 	y_change = 0
 	x = (display_width * 0.45)
 	y = (display_height * 0.88)
+	dt = clock.tick(60) / 1000
 	while not exited:
 		
 		#Set the background
@@ -59,23 +76,35 @@ def game_loop():
 				exited = True
 			
 			#Setting up movements
-			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_LEFT:
-					x_change = -5
-				elif event.key == pygame.K_RIGHT:
-					x_change = 5
-				elif event.key == pygame.K_UP:
-					y_change = -5
-				elif event.key == pygame.K_DOWN:
-					y_change = +5
-			if event.type == pygame.KEYUP:
+			keys = pygame.key.get_pressed()
+			
+			#Creating a movement booster
+			move = 10 if keys[pygame.K_LSHIFT] else 5 
+			
+			if keys[pygame.K_LEFT]: #to move left
+				x_change = -move
+			if x < 0 : x = 0
+			
+			if keys[pygame.K_RIGHT]: #to move right
+				x_change += move
+			if x > display_width - 20  : x = 741
+			
+			if keys[pygame.K_UP]: #to move up
+				y_change -= move
+			if y < 0: y = 0
+			
+			if keys[pygame.K_DOWN]: #to move down
+				y_change += move
+			if y > display_height - 15 : y=533
+			
+			if event.type == pygame.KEYUP: #stop if no key is pressed
 				if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
 					x_change = 0
-					y_change = 0	
-		if x > display_width - ship_width or x < 0:
-			x_change = 0
-		if y > display_height - ship_height or y < 0:
-			y_change = 0		
+					y_change = 0
+					
+			if keys[pygame.K_SPACE]: #if space is pressed
+				
+					
 		x += x_change
 		y += y_change
 	
