@@ -169,12 +169,16 @@ def intro_screen():
 			if event.type == pygame.QUIT:
 				pygame.quit()
 				quit()
-				
-		display_screen.fill(WHITE)
-		largeText = pygame.font.Font('shooter_font.ttf',115)
-		TextMsg, TextCoords = text("GALAGA", largeText)
-		TextCoords.center = ((width/2),(height/2))
-		display_screen.blit(TextMsg, TextCoords)
+		BackGround = Background('background.png', [0,0])
+		display_screen.fill([255,255,255])
+		display_screen.blit(BackGround.image, BackGround.rect)		
+		#display_screen.fill(WHITE)
+		myText = pygame.font.Font('shooter_font.ttf',90)
+		text = myText.render("KXSW GALAGA", 1, (255,255,255))
+		#TextMsg, TextCoords = text("KXSW GALAGA", largeText)
+		#TextCoords.center = ((width/2),(height/2))
+		display_screen.blit(text, (60,240))
+		#display_screen.blit(TextMsg, TextCoords)
 		
 		button("GO", 150,450,100,50,GREEN,YELLOW,game_loop)
 		button("Quit",550,450,100,50,RED,YELLOW,quitgame)
