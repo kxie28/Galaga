@@ -62,14 +62,20 @@ class Enemy(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect()
 		self.rect.x = random.randrange(width - self.rect.width)
 		self.rect.y = random.randrange(-100, -40)
-		self.speedy = random.randrange(1,8)
+		self.speedy = random.randrange(1,8) #random enemies come from the top
+		self.speedx = random.randrange(-3, 3) #random enemies can also come from the sides
 		
 	def update(self):
 		self.rect.y += self.speedy
-		if self.rect.top > height + 10:
+		self.rect.x += self.speedx
+		if self.rect.top > height + 10 or self.rect.left < -25 or self.rect.right > width +20:
 			self.rect.x = random.randrange(width - self.rect.width)
 			self.rect.y = random.randrange(-100, -40)
 			self.speedy = random.randrange(1, 8)
+
+class Bullet(pygame.sprite.Sprite):
+	def __init__(self, x ,y):
+		pygame.sprite.Sprite.__init__(self)
 
 all_sprites = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
@@ -95,6 +101,11 @@ while game_running:
 	
 	#Update the screen
 	all_sprites.update()
+	
+	#handle collisions
+	collide = pygame.sprite.spritecollide(player, enemies, False)
+	if collide:
+		game_running = False
 	
 	#Set the background
 	BackGround = Background('background.png', [0,0])
